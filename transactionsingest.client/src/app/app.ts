@@ -15,8 +15,7 @@ interface WeatherForecast {
   templateUrl: './app.html',
 })
 export class App implements OnInit {
-  public forecasts: WeatherForecast[] = [];
-
+  public readonly forecasts = signal<WeatherForecast[] | undefined>(undefined);
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
@@ -24,14 +23,10 @@ export class App implements OnInit {
   }
 
   getForecasts() {
-    this.http.get<WeatherForecast[]>('/weatherforecast').subscribe(
-      (result) => {
-        this.forecasts = result;
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
+    this.http.get<WeatherForecast[]>('/weatherforecast').subscribe({
+      next: (result) => this.forecasts.set(result),
+      error: (error) => console.error(error)
+    });
   }
 
   protected readonly title = signal('transactionsingest.client');
