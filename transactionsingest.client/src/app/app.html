@@ -4,15 +4,25 @@
 
 <table @if (transactions(); as transactions>
     <thead>
-        <tr>
-            <th>Source System</th>
-            <th>Transaction Id</th>
-        </tr>
+      <tr>
+        <th>Source System</th>
+        <th>Transaction Id</th>
+        <th>Card Number</th>
+        <th>Location Code</th>
+        <th>Product Name</th>
+        <th>Amount</th>
+        <th>Transaction Time</th>
+      </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let transaction of transactions()">
-            <td>{{ transaction.sourceSystem }}</td>
-            <td>{{ transaction.transactionId }}</td>
-        </tr>
+      <tr *ngFor="let transaction of transactions()">
+        <td>{{ transaction.sourceSystem }}</td>
+        <td>{{ transaction.transactionId }}</td>
+        <td>{{ transaction.cardNumber }}</td>
+        <td>{{ transaction.locationCode }}</td>
+        <td>{{ transaction.productName }}</td>
+        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.transactionTime }}</td>
+      </tr>
     </tbody>
 </table>

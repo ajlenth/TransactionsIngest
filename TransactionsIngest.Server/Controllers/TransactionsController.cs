@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace TransactionsIngest.Server.Controllers
 {
@@ -6,25 +7,17 @@ namespace TransactionsIngest.Server.Controllers
     [Route("[controller]")]
     public class TransactionsController : ControllerBase
     {
-        private static readonly string[] SourceSystems =
-        [
-            "Store Uptown", "Store Downtown", "Online"
-        ];
+        private readonly DataContext _ctx;
+
+        public TransactionsController(DataContext ctx)
+        {
+            _ctx = ctx;
+        }
 
         [HttpGet(Name = "GetTransactions")]
-        public IEnumerable<Transaction> Get()
+        public async Task<ActionResult<IEnumerable<Transaction>>> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new Transaction
-            {
-                SourceSystem = SourceSystems[Random.Shared.Next(SourceSystems.Length)],
-                TransactionId = Random.Shared.Next(0, int.MaxValue),
-                CardNumber = Random.Shared.Next(0, int.MaxValue).ToString(),
-                LocationCode = "loc",
-                ProductName = "prod",
-                Amount = 123,
-                TransactionTime = DateTime.Now.AddDays(index),
-            })
-            .ToArray();
+            return Ok(await _ctx.Transactions.ToListAsync());
         }
     }
 }

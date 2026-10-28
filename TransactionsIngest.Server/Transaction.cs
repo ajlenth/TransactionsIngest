@@ -1,13 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace TransactionsIngest.Server
 {
+    [PrimaryKey(nameof(SourceSystem), nameof(TransactionId))]
     public class Transaction
     {
-        [Key]
         public string SourceSystem { get; set; }
 
-        [Key]
         public int TransactionId { get; set; }
 
         public string CardNumber { get; set; }
