@@ -1,11 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, signal } from '@angular/core';
 
-interface WeatherForecast {
-  date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
+interface Transaction {
+  sourceSystem: string;
+  transactionId: number;
+  cardNumber: string;
+  locationCode: string;
+  productName: string;
+  amount: number;
+  transactionTime: Date;
 }
 
 @Component({
@@ -15,7 +18,7 @@ interface WeatherForecast {
   templateUrl: './app.html',
 })
 export class App implements OnInit {
-  public readonly forecasts = signal<WeatherForecast[] | undefined>(undefined);
+  public readonly transactions = signal<Transaction[] | undefined>(undefined);
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
@@ -23,8 +26,8 @@ export class App implements OnInit {
   }
 
   getForecasts() {
-    this.http.get<WeatherForecast[]>('/weatherforecast').subscribe({
-      next: (result) => this.forecasts.set(result),
+    this.http.get<Transaction[]>('/transactions').subscribe({
+      next: (result) => this.transactions.set(result),
       error: (error) => console.error(error)
     });
   }
