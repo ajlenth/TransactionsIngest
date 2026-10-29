@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using ObjectsComparer;
 
 namespace TransactionsIngest.Server.Controllers
@@ -16,10 +17,41 @@ namespace TransactionsIngest.Server.Controllers
             _ctx = ctx;
         }
 
+        const string STATUS_REVOKED = "Revoked";
+        const string STATUS_PENDING = "Pending";
+        const string STATUS_FINALIZED = "Finalized";
+        const string STATUS_AUTHORIZED = "Authorized";
+
+        string getStatus(Transaction t)
+        {
+            if (t.IsRevoked) return STATUS_REVOKED;
+
+            var now = DateTime.UtcNow;
+            var diff = (now - t.TransactionTime).TotalHours;
+
+            //transaction time is in future - mark as pending
+            if (diff < 0) return STATUS_PENDING;
+
+            //transaction time is in past - if older than 24 hours, mark as finalized
+            if (diff > 24) return STATUS_FINALIZED;
+
+            //transaction time is within 24 hours - still able to be modified and revoked
+            //mark as authorized
+            return STATUS_AUTHORIZED;
+        }
+
+
         [HttpGet(Name = "GetTransactions")]
         public async Task<ActionResult<IEnumerable<Transaction>>> Get()
         {
-            return Ok(await _ctx.Transactions.Include(t => t.AuditLog).ToListAsync());
+            var transactionList = await _ctx.Transactions.Include(t => t.AuditLog).ToListAsync();
+
+            foreach(var transaction in transactionList)
+            {
+                transaction.Status = getStatus(transaction);
+            }
+
+            return Ok(transactionList);
         }
 
         [Route("/import")]
@@ -37,7 +69,8 @@ namespace TransactionsIngest.Server.Controllers
                     await _ctx.AddAsync(transaction);
                 }
                 //entry exists - check for changes
-                else
+                //ignore changes if transaction status is finalized
+                else if(getStatus(existingTransaction) != STATUS_FINALIZED)
                 {
                     var comparer = new ObjectsComparer.Comparer<Transaction>();
                     bool changesDetected = !comparer.Compare(existingTransaction, transaction, out var differences);
@@ -65,7 +98,33 @@ namespace TransactionsIngest.Server.Controllers
 
             }
 
-            //TODO - check for revoked transactions here
+            var existingTransactions = await _ctx.Transactions.ToListAsync();
+            foreach(var existingTransaction in existingTransactions)
+            {
+                //if this transaction is finalized, skip revoke check
+                if (getStatus(existingTransaction) == STATUS_FINALIZED) continue;
+
+                var wasRevoked = existingTransaction.IsRevoked;
+                var isRevoked = true; //assume revoked until we verify that this transaction exists in the new import snapshot
+
+                foreach(var importedTransaction in importedTransactions)
+                {
+                    //found a match - this transaction is not revoked
+                    if(importedTransaction.SourceSystem == existingTransaction.SourceSystem && importedTransaction.TransactionId == existingTransaction.TransactionId)
+                    {
+                        isRevoked = false;
+                        break;
+                    }
+                }
+
+                //revoke status changed - update transaction entry & audit log
+                if(isRevoked != wasRevoked)
+                {
+                    existingTransaction.IsRevoked = isRevoked;
+                    existingTransaction.AuditLog.Add(new Revision { Field = "IsRevoked", From = wasRevoked.ToString(), To = isRevoked.ToString()});
+                    _ctx.Update(existingTransaction);
+                }
+            }
 
             //save all above changes
             await _ctx.SaveChangesAsync();

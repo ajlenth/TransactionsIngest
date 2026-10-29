@@ -11,7 +11,7 @@ using TransactionsIngest.Server;
 namespace TransactionsIngest.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20261029135336_revision")]
+    [Migration("20261029142906_revision")]
     partial class revision
     {
         /// <inheritdoc />
@@ -65,6 +65,9 @@ namespace TransactionsIngest.Server.Migrations
                     b.Property<string>("CardNumber")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LocationCode")
                         .IsRequired()

@@ -63,6 +63,9 @@ namespace TransactionsIngest.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("LocationCode")
                         .IsRequired()
                         .HasColumnType("TEXT");

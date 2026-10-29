@@ -9,6 +9,7 @@ interface Transaction {
   productName: string;
   amount: number;
   transactionTime: Date;
+  status: string;
 }
 
 @Component({

@@ -25,7 +25,7 @@ Content-Type: application/json
   "locationCode": "DOWNTOWN",
   "productName": "Mechanical Keyboard",
   "amount": 89.99,
-  "transactionTime": "2026-02-27T09:45:12Z"
+  "transactionTime": "2026-10-29T09:45:12"
   },
   {
   "sourceSystem": "Online",
@@ -34,6 +34,6 @@ Content-Type: application/json
   "locationCode": "ONLINE",
   "productName": "USB-C Docking Station",
   "amount": 129.95,
-  "transactionTime": "2026-02-27T11:20:05Z"
+  "transactionTime": "2026-10-29T20:20:05"
   }
 ]

@@ -24,6 +24,11 @@ namespace TransactionsIngest.Server
 
         public List<Revision> AuditLog { get; set; } = new();
 
+        public bool IsRevoked { get; set; }
+
+        [NotMapped]
+        public string Status { get; set; } = "";
+
     }
 
     public class Revision
