@@ -19,7 +19,7 @@ namespace TransactionsIngest.Server.Controllers
         [HttpGet(Name = "GetTransactions")]
         public async Task<ActionResult<IEnumerable<Transaction>>> Get()
         {
-            return Ok(await _ctx.Transactions.ToListAsync());
+            return Ok(await _ctx.Transactions.Include(t => t.AuditLog).ToListAsync());
         }
 
         [Route("/import")]
@@ -55,7 +55,7 @@ namespace TransactionsIngest.Server.Controllers
                             //ignore changes to the audit log itself to avoid infinite loops
                             if (diff.MemberPath.Contains("AuditLog")) continue;
 
-                            existingTransaction.AuditLog.Add(new Revision { Id = existingTransaction.AuditLog.Count, Field = diff.MemberPath, From = diff.Value1, To = diff.Value2 });
+                            existingTransaction.AuditLog.Add(new Revision { Field = diff.MemberPath, From = diff.Value1, To = diff.Value2 });
                         }
 
                         _ctx.Update(existingTransaction);
@@ -71,7 +71,7 @@ namespace TransactionsIngest.Server.Controllers
             await _ctx.SaveChangesAsync();
 
             //return updated list ot transactions
-            return Ok(await _ctx.Transactions.ToListAsync());
+            return Ok(await _ctx.Transactions.Include(t => t.AuditLog).ToListAsync());
         }
     }
 }

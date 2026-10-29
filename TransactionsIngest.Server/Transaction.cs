@@ -22,11 +22,10 @@ namespace TransactionsIngest.Server
 
         public DateTime TransactionTime { get; set; }
 
-        public List<Revision> AuditLog { get; set; } = [];
+        public List<Revision> AuditLog { get; set; } = new();
 
     }
 
-    [ComplexType]
     public class Revision
     {
         public int Id { get; set; }
@@ -34,5 +33,6 @@ namespace TransactionsIngest.Server
         public string From { get; set; }
         public string To { get; set; }
     }
+
 
 }

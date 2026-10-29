@@ -11,7 +11,7 @@ using TransactionsIngest.Server;
 namespace TransactionsIngest.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20261029013954_revision")]
+    [Migration("20261029135336_revision")]
     partial class revision
     {
         /// <inheritdoc />
@@ -19,6 +19,37 @@ namespace TransactionsIngest.Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
+
+            modelBuilder.Entity("TransactionsIngest.Server.Revision", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Field")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("From")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("To")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("TransactionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TransactionSourceSystem")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransactionSourceSystem", "TransactionId");
+
+                    b.ToTable("Revision");
+                });
 
             modelBuilder.Entity("TransactionsIngest.Server.Transaction", b =>
                 {
@@ -51,40 +82,15 @@ namespace TransactionsIngest.Server.Migrations
                     b.ToTable("Transactions");
                 });
 
+            modelBuilder.Entity("TransactionsIngest.Server.Revision", b =>
+                {
+                    b.HasOne("TransactionsIngest.Server.Transaction", null)
+                        .WithMany("AuditLog")
+                        .HasForeignKey("TransactionSourceSystem", "TransactionId");
+                });
+
             modelBuilder.Entity("TransactionsIngest.Server.Transaction", b =>
                 {
-                    b.OwnsMany("TransactionsIngest.Server.Revision", "AuditLog", b1 =>
-                        {
-                            b1.Property<string>("TransactionSourceSystem");
-
-                            b1.Property<int>("TransactionId");
-
-                            b1.Property<int>("__synthesizedOrdinal")
-                                .ValueGeneratedOnAddOrUpdate();
-
-                            b1.Property<string>("Field")
-                                .IsRequired();
-
-                            b1.Property<string>("From")
-                                .IsRequired();
-
-                            b1.Property<int>("Id");
-
-                            b1.Property<string>("To")
-                                .IsRequired();
-
-                            b1.HasKey("TransactionSourceSystem", "TransactionId", "__synthesizedOrdinal");
-
-                            b1.ToTable("Transactions");
-
-                            b1
-                                .ToJson("AuditLog")
-                                .HasColumnType("TEXT");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TransactionSourceSystem", "TransactionId");
-                        });
-
                     b.Navigation("AuditLog");
                 });
 #pragma warning restore 612, 618
