@@ -46,38 +46,43 @@ namespace TransactionsIngest.Server.Migrations
                     b.HasKey("SourceSystem", "TransactionId");
 
                     b.ToTable("Transactions");
+                });
 
-                    b.HasData(
-                        new
+            modelBuilder.Entity("TransactionsIngest.Server.Transaction", b =>
+                {
+                    b.OwnsMany("TransactionsIngest.Server.Revision", "AuditLog", b1 =>
                         {
-                            SourceSystem = "Store Uptown",
-                            TransactionId = 100001,
-                            Amount = 24.99m,
-                            CardNumber = "***1111",
-                            LocationCode = "UPTOWN",
-                            ProductName = "Wireless Mouse",
-                            TransactionTime = new DateTime(2026, 2, 27, 2, 15, 30, 0, DateTimeKind.Local)
-                        },
-                        new
-                        {
-                            SourceSystem = "Store Downtown",
-                            TransactionId = 100001,
-                            Amount = 89.99m,
-                            CardNumber = "***0002",
-                            LocationCode = "DOWNTOWN",
-                            ProductName = "Mechanical Keyboard",
-                            TransactionTime = new DateTime(2026, 2, 27, 3, 45, 12, 0, DateTimeKind.Local)
-                        },
-                        new
-                        {
-                            SourceSystem = "Online",
-                            TransactionId = 100001,
-                            Amount = 129.95m,
-                            CardNumber = "***4444",
-                            LocationCode = "ONLINE",
-                            ProductName = "USB-C Docking Station",
-                            TransactionTime = new DateTime(2026, 2, 27, 5, 20, 5, 0, DateTimeKind.Local)
+                            b1.Property<string>("TransactionSourceSystem");
+
+                            b1.Property<int>("TransactionId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<string>("Field")
+                                .IsRequired();
+
+                            b1.Property<string>("From")
+                                .IsRequired();
+
+                            b1.Property<int>("Id");
+
+                            b1.Property<string>("To")
+                                .IsRequired();
+
+                            b1.HasKey("TransactionSourceSystem", "TransactionId", "__synthesizedOrdinal");
+
+                            b1.ToTable("Transactions");
+
+                            b1
+                                .ToJson("AuditLog")
+                                .HasColumnType("TEXT");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TransactionSourceSystem", "TransactionId");
                         });
+
+                    b.Navigation("AuditLog");
                 });
 #pragma warning restore 612, 618
         }

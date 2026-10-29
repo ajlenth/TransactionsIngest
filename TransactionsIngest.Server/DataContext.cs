@@ -15,5 +15,16 @@ namespace TransactionsIngest.Server
             optionsBuilder.UseSqlite();
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Transaction>(entity =>
+            {
+                entity.OwnsMany(o => o.AuditLog, builder =>
+                {
+                    builder.ToJson();
+                });
+            });
+        }
+
     }
 }

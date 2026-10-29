@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ObjectsComparer;
 
 namespace TransactionsIngest.Server.Controllers
 {
@@ -40,15 +42,23 @@ namespace TransactionsIngest.Server.Controllers
                     var comparer = new ObjectsComparer.Comparer<Transaction>();
                     bool changesDetected = !comparer.Compare(existingTransaction, transaction, out var differences);
 
-                    //changes detected - modify database entry
-                    //TODO - record changes in audit log
+                    //cache differences here to store in audit log later
+                    var cachedDifferences = new List<Difference>(differences);
+
+                    //changes detected - modify database entry and record changes in audit log
                     if (changesDetected)
                     {
-                        foreach(var diff in differences)
+                        _ctx.Entry(existingTransaction).CurrentValues.SetValues(transaction);
+
+                        foreach (var diff in cachedDifferences)
                         {
-                            _ctx.Entry(existingTransaction).CurrentValues.SetValues(transaction);
+                            //ignore changes to the audit log itself to avoid infinite loops
+                            if (diff.MemberPath.Contains("AuditLog")) continue;
+
+                            existingTransaction.AuditLog.Add(new Revision { Id = existingTransaction.AuditLog.Count, Field = diff.MemberPath, From = diff.Value1, To = diff.Value2 });
                         }
 
+                        _ctx.Update(existingTransaction);
                     }
 
                 }

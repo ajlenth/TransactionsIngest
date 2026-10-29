@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection.Metadata;
 using Microsoft.EntityFrameworkCore;
 
 namespace TransactionsIngest.Server
@@ -20,5 +22,17 @@ namespace TransactionsIngest.Server
 
         public DateTime TransactionTime { get; set; }
 
+        public List<Revision> AuditLog { get; set; } = [];
+
     }
+
+    [ComplexType]
+    public class Revision
+    {
+        public int Id { get; set; }
+        public string Field { get; set; }
+        public string From { get; set; }
+        public string To { get; set; }
+    }
+
 }
