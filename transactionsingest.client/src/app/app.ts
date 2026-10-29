@@ -22,10 +22,10 @@ export class App implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.getForecasts();
+    this.getTransactions();
   }
 
-  getForecasts() {
+  getTransactions() {
     this.http.get<Transaction[]>('/transactions').subscribe({
       next: (result) => this.transactions.set(result),
       error: (error) => console.error(error)

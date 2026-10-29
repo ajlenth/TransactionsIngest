@@ -7,6 +7,7 @@ const PROXY_CONFIG = [
   {
     context: [
       "/transactions",
+      "/import"
     ],
     target,
     secure: false

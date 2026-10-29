@@ -19,5 +19,49 @@ namespace TransactionsIngest.Server.Controllers
         {
             return Ok(await _ctx.Transactions.ToListAsync());
         }
+
+        [Route("/import")]
+        [HttpPost(Name = "ImportTransactions")]
+        public async Task<ActionResult<IEnumerable<Transaction>>> Post(IEnumerable<Transaction> importedTransactions)
+        {
+            foreach(var transaction in importedTransactions)
+            {
+                //check if a transaction with this key already exists
+                var existingTransaction = await _ctx.Transactions.FindAsync(transaction.SourceSystem, transaction.TransactionId);
+
+                //no such entry exists - add it to the database
+                if(existingTransaction == null)
+                {
+                    await _ctx.AddAsync(transaction);
+                }
+                //entry exists - check for changes
+                else
+                {
+                    var comparer = new ObjectsComparer.Comparer<Transaction>();
+                    bool changesDetected = !comparer.Compare(existingTransaction, transaction, out var differences);
+
+                    //changes detected - modify database entry
+                    //TODO - record changes in audit log
+                    if (changesDetected)
+                    {
+                        foreach(var diff in differences)
+                        {
+                            _ctx.Entry(existingTransaction).CurrentValues.SetValues(transaction);
+                        }
+
+                    }
+
+                }
+
+            }
+
+            //TODO - check for revoked transactions here
+
+            //save all above changes
+            await _ctx.SaveChangesAsync();
+
+            //return updated list ot transactions
+            return Ok(await _ctx.Transactions.ToListAsync());
+        }
     }
 }
