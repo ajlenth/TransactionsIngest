@@ -2,35 +2,47 @@
 <div *ngIf="this.viewMode == 'Transactions'">
   <p *ngIf="!transactions()"><em>Loading...</em></p>
   <h1 id="tableLabel">Transaction Ingest</h1>
-  <table @if (transactions(); as transactions>
-    <thead>
-      <tr>
-        <th>Source System</th>
-        <th>Transaction Id</th>
-        <th>Card Number</th>
-        <th>Location Code</th>
-        <th>Product Name</th>
-        <th>Amount</th>
-        <th>Transaction Time</th>
-        <th>Status</th>
-        <th>Audit Log</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let transaction of transactions()">
-        <td>{{ transaction.sourceSystem }}</td>
-        <td>{{ transaction.transactionId }}</td>
-        <td>{{ transaction.cardNumber }}</td>
-        <td>{{ transaction.locationCode }}</td>
-        <td>{{ transaction.productName }}</td>
-        <td>{{ transaction.amount }}</td>
-        <td>{{ transaction.transactionTime }}</td>
-        <td>{{ transaction.status }}</td>
-        <td><button (click)="viewAuditLog(transaction.sourceSystem, transaction.transactionId)">View</button></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+
+
+  <div>
+    <input type="file"
+           #fileInput
+           (change)="onFileSelected($event)"
+           style="display: none;"
+           accept=".json" />
+    </div>
+
+    <button (click)="fileInput.click()">Import From File</button>
+
+    <table @if (transactions(); as transactions>
+      <thead>
+        <tr>
+          <th>Source System</th>
+          <th>Transaction Id</th>
+          <th>Card Number</th>
+          <th>Location Code</th>
+          <th>Product Name</th>
+          <th>Amount</th>
+          <th>Transaction Time</th>
+          <th>Status</th>
+          <th>Audit Log</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let transaction of transactions()">
+          <td>{{ transaction.sourceSystem }}</td>
+          <td>{{ transaction.transactionId }}</td>
+          <td>{{ transaction.cardNumber }}</td>
+          <td>{{ transaction.locationCode }}</td>
+          <td>{{ transaction.productName }}</td>
+          <td>{{ transaction.amount }}</td>
+          <td>{{ transaction.transactionTime }}</td>
+          <td>{{ transaction.status }}</td>
+          <td><button (click)="viewAuditLog(transaction.sourceSystem, transaction.transactionId)">View</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
 <div *ngIf="this.viewMode == 'AuditLog'">
   <p *ngIf="!auditLog()"><em>Loading...</em></p>

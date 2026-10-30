@@ -61,5 +61,30 @@ export class App implements OnInit {
     this.getTransactions()
   }
 
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+
+      var file = target.files[0]
+
+      var fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+
+        const headers = { 'Content-Type': 'application/json' };
+
+        this.http.post<Transaction[]>("/import", fileReader.result, {headers}).subscribe({
+          next: (result) => this.transactions.set(result),
+          error: (error) => {
+            alert("Error importing data! Check console for more details.")
+            console.error(error)
+          }
+        })
+      }
+      fileReader.readAsText(file);
+    }
+  }
+
   protected readonly title = signal('transactionsingest.client');
 }

@@ -1,0 +1,29 @@
+[
+  {
+  "sourceSystem": "Store Uptown",
+  "transactionId": 100001,
+  "cardNumber": "***1111",
+  "locationCode": "UPTOWN",
+  "productName": "Wireless Mouse",
+  "amount": 24.99,
+  "transactionTime": "2026-02-27T08:15:30Z"
+  },s
+  {
+  "sourceSystem": "Store Downtown",
+  "transactionId": 100001,
+  "cardNumber": "***0022123",
+  "locationCode": "DOWNTOWN",
+  "productName": "Mechanical Keyboard",
+  "amount": 89.99,
+  "transactionTime": "2026-10-29T09:45:12"
+  },
+  {
+  "sourceSystem": "Online",
+  "transactionId": 100001,
+  "cardNumber": "***4444321",
+  "locationCode": "ONLINE",
+  "productName": "USB-C Docking Station",
+  "amount": 129.95,
+  "transactionTime": "2026-10-29T20:20:05"
+  }
+]
