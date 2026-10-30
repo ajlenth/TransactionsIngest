@@ -1,8 +1,8 @@
-<h1 id="tableLabel">Transaction Ingest</h1>
 
-<p *ngIf="!transactions()"><em>Loading...</em></p>
-
-<table @if (transactions(); as transactions>
+<div *ngIf="this.viewMode == 'Transactions'">
+  <p *ngIf="!transactions()"><em>Loading...</em></p>
+  <h1 id="tableLabel">Transaction Ingest</h1>
+  <table @if (transactions(); as transactions>
     <thead>
       <tr>
         <th>Source System</th>
@@ -13,6 +13,7 @@
         <th>Amount</th>
         <th>Transaction Time</th>
         <th>Status</th>
+        <th>Audit Log</th>
       </tr>
     </thead>
     <tbody>
@@ -25,6 +26,33 @@
         <td>{{ transaction.amount }}</td>
         <td>{{ transaction.transactionTime }}</td>
         <td>{{ transaction.status }}</td>
+        <td><button (click)="viewAuditLog(transaction.sourceSystem, transaction.transactionId)">View</button></td>
       </tr>
     </tbody>
-</table>
+  </table>
+</div>
+
+<div *ngIf="this.viewMode == 'AuditLog'">
+  <p *ngIf="!auditLog()"><em>Loading...</em></p>
+  <h1 id="tableLabel">Audit Log</h1>
+  <button (click)="closeAuditLog()">Close</button>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Field</th>
+        <th>From</th>
+        <th>To</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let revision of auditLog()">
+        <td>{{ revision.id }}</td>
+        <td>{{ revision.field }}</td>
+        <td>{{ revision.from }}</td>
+        <td>{{ revision.to }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

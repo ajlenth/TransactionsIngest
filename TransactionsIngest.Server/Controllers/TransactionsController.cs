@@ -46,12 +46,23 @@ namespace TransactionsIngest.Server.Controllers
         {
             var transactionList = await _ctx.Transactions.Include(t => t.AuditLog).ToListAsync();
 
-            foreach(var transaction in transactionList)
+            foreach (var transaction in transactionList)
             {
                 transaction.Status = getStatus(transaction);
             }
 
             return Ok(transactionList);
+        }
+
+        [Route("/auditLog")]
+        [HttpGet("/auditLog/{sourceSystem}/{transactionId}")]
+        public async Task<ActionResult<List<Revision>>> GetAuditLog(string sourceSystem, int transactionId)
+        {
+            var transaction = await _ctx.Transactions.Include(t => t.AuditLog).FirstOrDefaultAsync(t => t.SourceSystem == sourceSystem && t.TransactionId == transactionId);
+
+            if (transaction == null) return NotFound();
+
+            return Ok(transaction.AuditLog);
         }
 
         [Route("/import")]

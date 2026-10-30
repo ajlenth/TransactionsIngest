@@ -5,6 +5,11 @@ Accept: application/json
 
 ###
 
+GET {{TransactionsIngest.Server_HostAddress}}/auditLog/Online/100001
+Accept: application/json
+
+###
+
 POST {{TransactionsIngest.Server_HostAddress}}/import/
 Accept: application/json
 Content-Type: application/json
