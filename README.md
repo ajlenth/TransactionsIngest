@@ -1,6 +1,7 @@
 # Transactions Ingest Coding Exercise - Alexander Lenth
 
-
+# Prerequisites
+- Ensure the latest Node.js and angular cli versions are installed 
 
 # Building and Running
 
@@ -12,7 +13,7 @@
 
 - The app should build successfully
 
-- Control-click https://localhost:{port} to launch the app in a browser
+- Open a browser and navigate to https://localhost:{port}
 
 
 
@@ -89,4 +90,3 @@
 - Select a JSON file matching the above data structure
 
 - If successful, the transation table will update automatically. Otherwise, an alert will show and an error will appear in the console
-
